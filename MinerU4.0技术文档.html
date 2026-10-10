@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MinerU 4.0 技术文档 | Technische Dokumentation</title>
+<style>
+  :root{
+    --bg:#0f1220; --bg2:#171b30; --card:#1c2138; --card2:#232a47;
+    --ink:#eef1ff; --muted:#9aa3c7; --line:rgba(255,255,255,.08);
+    --brand:#6c8cff; --brand2:#8f6cff; --accent:#38e0c0; --warn:#ffb454;
+    --grad:linear-gradient(135deg,#6c8cff 0%,#8f6cff 55%,#b06cff 100%);
+    --shadow:0 20px 60px rgba(0,0,0,.45);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:"Segoe UI","PingFang SC","Microsoft YaHei","Helvetica Neue",Arial,sans-serif;
+    background:radial-gradient(1200px 600px at 85% -10%,rgba(140,108,255,.22),transparent 60%),
+               radial-gradient(900px 500px at -10% 10%,rgba(56,224,192,.14),transparent 55%),
+               var(--bg);
+    color:var(--ink); line-height:1.75; -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1040px;margin:0 auto;padding:0 22px 90px}
+
+  /* ---------- Language switch ---------- */
+  .topbar{
+    position:sticky;top:0;z-index:50;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 22px;backdrop-filter:blur(12px);
+    background:rgba(15,18,32,.72);border-bottom:1px solid var(--line);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.4px}
+  .brand .dot{width:11px;height:11px;border-radius:50%;background:var(--grad);box-shadow:0 0 14px rgba(140,108,255,.8)}
+  .sw{display:flex;gap:6px;background:rgba(255,255,255,.06);padding:4px;border-radius:999px}
+  .sw button{
+    border:0;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);
+    background:transparent;padding:7px 18px;border-radius:999px;transition:.25s;
+  }
+  .sw button.on{color:#0f1220;background:var(--grad);box-shadow:0 4px 14px rgba(108,140,255,.4)}
+  .sw button:not(.on):hover{color:var(--ink)}
+
+  /* ---------- Hero ---------- */
+  .hero{text-align:center;padding:74px 0 46px}
+  .hero .tag{
+    display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;
+    color:var(--accent);background:rgba(56,224,192,.1);border:1px solid rgba(56,224,192,.3);
+    padding:6px 16px;border-radius:999px;margin-bottom:22px;
+  }
+  .hero h1{
+    font-size:clamp(34px,6vw,58px);font-weight:800;line-height:1.15;
+    background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;
+    margin-bottom:16px;
+  }
+  .hero p.lead{max-width:760px;margin:0 auto;color:var(--muted);font-size:clamp(15px,2.2vw,18px)}
+
+  /* ---------- Section ---------- */
+  section{margin-top:52px}
+  .sec-head{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+  .sec-num{
+    flex:none;width:42px;height:42px;border-radius:12px;display:grid;place-items:center;
+    background:var(--grad);color:#0f1220;font-weight:800;font-size:17px;
+    box-shadow:0 8px 22px rgba(108,140,255,.35);
+  }
+  .sec-head h2{font-size:clamp(20px,3vw,26px);font-weight:700}
+  .sec-head p.sub{color:var(--muted);font-size:14px;margin-top:2px}
+
+  /* ---------- Cards ---------- */
+  .grid{display:grid;gap:18px}
+  .g2{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+  .g4{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+  .card{
+    background:linear-gradient(160deg,var(--card),var(--card2));
+    border:1px solid var(--line);border-radius:18px;padding:24px 24px 20px;
+    transition:transform .25s,box-shadow .25s,border-color .25s;
+  }
+  .card:hover{transform:translateY(-4px);border-color:rgba(140,108,255,.45);box-shadow:var(--shadow)}
+  .card .ico{
+    width:46px;height:46px;border-radius:12px;display:grid;place-items:center;font-size:23px;
+    background:rgba(108,140,255,.14);margin-bottom:14px;
+  }
+  .card h3{font-size:17px;margin-bottom:6px}
+  .card p{color:var(--muted);font-size:14px}
+  .tier-tag{
+    display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.5px;
+    padding:3px 10px;border-radius:999px;margin-bottom:10px;
+  }
+  .t-flash{background:rgba(56,224,192,.15);color:var(--accent);border:1px solid rgba(56,224,192,.35)}
+  .t-basic{background:rgba(108,140,255,.15);color:#9db4ff;border:1px solid rgba(108,140,255,.35)}
+  .t-std{background:rgba(255,180,84,.15);color:var(--warn);border:1px solid rgba(255,180,84,.35)}
+  .t-adv{background:rgba(240,120,160,.15);color:#ff9ec2;border:1px solid rgba(240,120,160,.35)}
+
+  /* ---------- Chips ---------- */
+  .chips{display:flex;flex-wrap:wrap;gap:10px}
+  .chip{
+    display:inline-flex;align-items:center;gap:8px;
+    background:rgba(255,255,255,.05);border:1px solid var(--line);
+    padding:8px 15px;border-radius:999px;font-size:13.5px;color:var(--ink);
+    transition:.2s;
+  }
+  .chip:hover{border-color:rgba(56,224,192,.5);background:rgba(56,224,192,.08)}
+  .chip b{color:var(--accent);font-weight:700}
+
+  /* ---------- Table ---------- */
+  table{width:100%;border-collapse:collapse;border-radius:16px;overflow:hidden;background:var(--card);font-size:14.5px}
+  thead th{
+    text-align:left;padding:14px 18px;font-size:13px;letter-spacing:.6px;text-transform:uppercase;
+    background:rgba(108,140,255,.14);color:#c3cfff;
+  }
+  tbody td{padding:14px 18px;border-top:1px solid var(--line);color:var(--muted)}
+  tbody td:first-child{color:var(--ink);font-weight:600}
+  tbody tr:hover{background:rgba(255,255,255,.03)}
+  .ok{color:var(--accent);font-weight:700}
+
+  /* ---------- Callout ---------- */
+  .callout{
+    display:flex;gap:14px;border-radius:16px;padding:20px 22px;margin-top:22px;
+    background:rgba(56,224,192,.07);border:1px solid rgba(56,224,192,.3);
+  }
+  .callout .big{font-size:22px;line-height:1}
+  .callout b{color:var(--accent)}
+  .callout.warn{background:rgba(255,180,84,.07);border-color:rgba(255,180,84,.3)}
+  .callout.warn .big{color:var(--warn)}
+  .callout.warn b{color:var(--warn)}
+
+  /* ---------- Footer ---------- */
+  footer{margin-top:70px;padding-top:26px;border-top:1px solid var(--line);color:var(--muted);font-size:13px;text-align:center}
+
+  @media (max-width:640px){
+    .hero{padding:50px 0 30px}
+    .topbar{padding:12px 14px}
+    .sw button{padding:6px 13px;font-size:12px}
+  }
+</style>
+</head>
+<body>
+
+<!-- ======== Top bar ======== -->
+<div class="topbar">
+  <div class="brand"><span class="dot"></span> MinerU 4.0</div>
+  <div class="sw">
+    <button id="btn-zh" class="on" onclick="setLang('zh')">中文</button>
+    <button id="btn-de" onclick="setLang('de')">Deutsch</button>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ======== Hero ======== -->
+  <div class="hero">
+    <div class="tag" data-zh="⚡ 文档解析 · 本地文档库 · 服务工具 三合一" data-de="⚡ Analyse · lokale Bibliothek · Service-Tools in einem">⚡ 文档解析 · 本地文档库 · 服务工具 三合一</div>
+    <h1>MinerU 4.0</h1>
+    <p class="lead" data-zh="MinerU 4.0 将文档解析、本地文档库和服务工具整合到同一个工作流中，用于文档转换、应用集成和智能体（Agent）阅读。">
+      MinerU 4.0 将文档解析、本地文档库和服务工具整合到同一个工作流中，用于文档转换、应用集成和智能体（Agent）阅读。</p>
+  </div>
+
+  <!-- ======== 1 Overview ======== -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">1</div>
+      <div>
+        <h2 data-zh="它是什么？" data-de="Was ist MinerU 4.0?">它是什么？</h2>
+        <p class="sub" data-zh="一句话看懂 MinerU 4.0" data-de="MinerU 4.0 in einem Satz">一句话看懂 MinerU 4.0</p>
+      </div>
+    </div>
+    <div class="grid g4">
+      <div class="card"><div class="ico">📄</div><h3 data-zh="文档解析" data-de="Dokumentenanalyse">文档解析</h3><p data-zh="无论 PDF、扫描图片，还是 Word / PPT / Excel，都能把其中的文字、表格与版式提取出来，整理成易读的格式。" data-de="Ob PDF, gescannte Bilder oder Word/PPT/Excel – Text, Tabellen und Layout werden extrahiert und in lesbare Formate überführt.">无论 PDF、扫描图片，还是 Word / PPT / Excel，都能把其中的文字、表格与版式提取出来，整理成易读的格式。</p></div>
+      <div class="card"><div class="ico">📚</div><h3 data-zh="本地文档库" data-de="Lokale Bibliothek">本地文档库</h3><p data-zh="支持发现文件、缓存结果、全文搜索，还能按页或按块继续阅读，并保留稳定的引用定位符。" data-de="Dateien finden, Ergebnisse cachen, Volltextsuche, seiten- oder blockweises Fortsetzen mit stabilen Zitierlokatoren.">支持发现文件、缓存结果、全文搜索，还能按页或按块继续阅读，并保留稳定的引用定位符。</p></div>
+      <div class="card"><div class="ico">🧰</div><h3 data-zh="服务工具" data-de="Service-Tools">服务工具</h3><p data-zh="内置 Python SDK、V1 API、批量转换、多服务 Router 与可视化 WebUI，方便应用集成与日常使用。" data-de="Mit Python-SDK, V1-API, Batch-Konvertierung, Router und WebUI für Integration und Alltag.">内置 Python SDK、V1 API、批量转换、多服务 Router 与可视化 WebUI，方便应用集成与日常使用。</p></div>
+      <div class="card"><div class="ico">🤖</div><h3 data-zh="智能体阅读" data-de="Agenten-Lesen">智能体阅读</h3><p data-zh="为 AI 智能体（Agent）提供结构化的文档阅读能力，让程序也能像人一样读文档、找信息。" data-de="Bietet KI-Agenten strukturiertes Lesen – Programme lesen Dokumente wie ein Mensch.">为 AI 智能体（Agent）提供结构化的文档阅读能力，让程序也能像人一样读文档、找信息。</p></div>
+    </div>
+  </section>
+
+  <!-- ======== 2 Tiers ======== -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">2</div>
+      <div>
+        <h2 data-zh="四种解析层级" data-de="Vier Analyseebenen">四种解析层级</h2>
+        <p class="sub" data-zh="按速度与精度需求自由选择" data-de="Je nach Bedarf zwischen Geschwindigkeit und Genauigkeit wählen">按速度与精度需求自由选择</p>
+      </div>
+    </div>
+    <div class="grid g4">
+      <div class="card">
+        <span class="tier-tag t-flash">FLASH</span>
+        <h3 data-zh="快速预览" data-de="Schnelle Vorschau">快速预览</h3>
+        <p data-zh="用于快速预览与建立索引，速度优先，适合先浏览文档大概内容、搭建检索索引的场景。" data-de="Für schnelle Vorschauen und Indizierung – ideal zum Überfliegen und Aufbau von Suchindizes.">用于快速预览与建立索引，速度优先，适合先浏览文档大概内容、搭建检索索引的场景。</p>
+      </div>
+      <div class="card">
+        <span class="tier-tag t-basic">BASIC</span>
+        <h3 data-zh="标准解析" data-de="Standard-Analyse">标准解析</h3>
+        <p data-zh="基于 OCR 与模型的解析方式，适合绝大多数常规文档的文字与版式提取需求。" data-de="OCR- und modellbasierte Analyse für die meisten gängigen Dokumente.">基于 OCR 与模型的解析方式，适合绝大多数常规文档的文字与版式提取需求。</p>
+      </div>
+      <div class="card">
+        <span class="tier-tag t-std">STANDARD</span>
+        <h3 data-zh="标准+ 高质量" data-de="Höhere Qualität">标准+ 高质量</h3>
+        <p data-zh="面向更复杂的版式结构，在准确度上有更严格的要求时使用。" data-de="Für anspruchsvollere Layouts und strengere Qualitätsanforderungen.">面向更复杂的版式结构，在准确度上有更严格的要求时使用。</p>
+      </div>
+      <div class="card">
+        <span class="tier-tag t-adv">ADVANCED</span>
+        <h3 data-zh="高级解析" data-de="Fortgeschritten">高级解析</h3>
+        <p data-zh="最高规格的解析能力，用于复杂排版、高精度要求的高端场景。" data-de="Maximale Qualität für komplexe Layouts und höchste Ansprüche.">最高规格的解析能力，用于复杂排版、高精度要求的高端场景。</p>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="big">💡</span>
+      <div><b data-zh="通俗理解：" data-de="Einfach gesagt:">通俗理解：</b>
+        <span data-zh="Flash 像“快速翻页浏览”，Basic 像“认真读一遍”，Standard / Advanced 则像“逐字逐句精读并严格校对” —— 越往后，解析越精细，速度也相应更慢。" data-de="Flash ist wie ein schnelles Durchblättern, Basic wie ein gründliches Lesen, Standard/Advanced wie ein genaues Lektorat – je höher die Stufe, desto präziser, aber auch langsamer.">Flash 像“快速翻页浏览”，Basic 像“认真读一遍”，Standard / Advanced 则像“逐字逐句精读并严格校对” —— 越往后，解析越精细，速度也相应更慢。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== 3 Formats ======== -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">3</div>
+      <div>
+        <h2 data-zh="支持的输入格式" data-de="Unterstützte Eingabeformate">支持的输入格式</h2>
+        <p data-zh="覆盖面广，常见文档格式几乎都支持" data-de="Fast alle gängigen Dokumentformate" class="sub">覆盖面广，常见文档格式几乎都支持</p>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <h3>📄 <span data-zh="文档与办公" data-de="Dokumente & Büro">文档与办公</span></h3>
+        <div class="chips" style="margin-top:14px">
+          <span class="chip"><b>PDF</b></span><span class="chip">DOC / DOCX</span><span class="chip">PPT / PPTX</span>
+          <span class="chip">XLS / XLSX</span><span class="chip">RTF</span><span class="chip">ODT / ODS / ODP</span>
+        </div>
+      </div>
+      <div class="card">
+        <h3>🖼️ <span data-zh="图片与特殊格式" data-de="Bilder & Sonderformate">图片与特殊格式</span></h3>
+        <div class="chips" style="margin-top:14px">
+          <span class="chip"><b>图片</b></span><span class="chip">EPUB</span><span class="chip">OFD</span>
+          <span class="chip">HTML / MHTML</span><span class="chip">CSV / TSV</span>
+        </div>
+      </div>
+    </div>
+    <div class="callout">
+      <span class="big">✨</span>
+      <div><b data-zh="DocVortex：">DocVortex：</b>
+        <span data-zh="内置的原生文档解析引擎，负责对文档内容进行深度解析，让后续的转换与阅读更准确、更稳定。" data-de="Die eingebaute native Analyse-Engine für tiefe, stabile Dokumentenanalyse – Grundlage für präzisere Konvertierung und Lesen.">内置的原生文档解析引擎，负责对文档内容进行深度解析，让后续的转换与阅读更准确、更稳定。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== 4 Library & Agent ======== -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">4</div>
+      <div>
+        <h2 data-zh="文档库与智能体阅读" data-de="Dokumentbibliothek & Agenten-Lesen">文档库与智能体阅读</h2>
+        <p data-zh="把文档变成可检索、可追引的知识资源" data-de="Dokumente als durchsuchbares, zitierbares Wissen">把文档变成可检索、可追引的知识资源</p>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><div class="ico">🔎</div><h3 data-zh="发现与搜索" data-de="Finden & Suchen">发现与搜索</h3><p data-zh="自动发现文件、缓存解析结果，并支持对内容进行全文搜索，快速定位所需信息。" data-de="Dateien automatisch finden, Ergebnisse cachen und Volltextsuche für schnelles Auffinden.">自动发现文件、缓存解析结果，并支持对内容进行全文搜索，快速定位所需信息。</p></div>
+      <div class="card"><div class="ico">📍</div><h3 data-zh="按页 / 按块续读" data-de="Seiten- / Blockweise fortfahren">按页 / 按块续读</h3><p data-zh="可从上次中断的页面或内容块继续阅读，配合稳定的引用定位符（citation locators），追溯来源准确可靠。" data-de="Dort weiterlesen, wo man aufgehört hat – mit stabilen Zitierlokatoren für verlässliche Quellenangaben.">可从上次中断的页面或内容块继续阅读，配合稳定的引用定位符（citation locators），追溯来源准确可靠。</p></div>
+      <div class="card"><div class="ico">🤖</div><h3 data-zh="为 Agent 而生" data-de="Für Agenten gebaut">为 Agent 而生</h3><p data-zh="输出结构化、可定位的阅读结果，让智能体（Agent）与程序能够高效地消费文档信息。" data-de="Strukturierte, lokalisierbare Ergebnisse – damit Agenten und Programme Dokumente effizient nutzen.">输出结构化、可定位的阅读结果，让智能体（Agent）与程序能够高效地消费文档信息。</p></div>
+      <div class="card"><div class="ico">🛡️</div><h3 data-zh="引用可追溯" data-de="Zitierbar">引用可追溯</h3><p data-zh="每次引用都有稳定的定位依据，适合对出处要求严格的写作、研究与合规场景。" data-de="Jede Referenz hat einen stabilen Anker – ideal für Schreiben, Forschung und Compliance.">每次引用都有稳定的定位依据，适合对出处要求严格的写作、研究与合规场景。</p></div>
+    </div>
+  </section>
+
+  <!-- ======== 5 Models ======== -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">5</div>
+      <div>
+        <h2 data-zh="独立的模型配置" data-de="Unabhängige Modellkonfiguration">独立的模型配置</h2>
+        <p data-zh="底层引擎自由选择，不被绑定" data-de="Freie Wahl der Engine, keine Bindung">底层引擎自由选择，不被绑定</p>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="card"><div class="ico">🧩</div><h3 data-zh="小模型引擎" data-de="Kleine Modelle">小模型引擎</h3><p data-zh="可选择 ONNX 或 Torch 作为小模型推理引擎，按部署环境灵活取舍。" data-de="ONNX oder Torch als Inferenz-Engine für kleine Modelle – flexibel je nach Umgebung.">可选择 ONNX 或 Torch 作为小模型推理引擎，按部署环境灵活取舍。</p></div>
+      <div class="card"><div class="ico">👁️</div><h3 data-zh="视觉语言模型（VLM）" data-de="Vision-Language-Modell (VLM)">视觉语言模型（VLM）</h3><p data-zh="视觉语言模型（能同时理解图像与文字）可选用 llama.cpp、vLLM 或 LMDeploy 运行，兼顾性能与部署方式。" data-de="Für das VLM stehen llama.cpp, vLLM oder LMDeploy zur Verfügung – je nach Leistung und Deployment.">视觉语言模型（能同时理解图像与文字）可选用 llama.cpp、vLLM 或 LMDeploy 运行，兼顾性能与部署方式。</p></div>
+    </div>
+    <div class="callout">
+      <span class="big">💡</span>
+      <div><b data-zh="通俗理解：" data-de="Einfach gesagt:">通俗理解：</b>
+        <span data-zh="OCR = 光学字符识别，把图片或扫描件里的文字“认出来”；VLM = 视觉语言模型，能同时“看懂图、读懂字”。MinerU 允许你为两者分别指定引擎。" data-de="OCR = optische Zeichenerkennung (liest Text aus Bildern/Scans); VLM = Vision-Language-Modell (versteht Bild und Text zugleich). MinerU lässt Sie die Engine für beide getrennt wählen.">OCR = 光学字符识别，把图片或扫描件里的文字“认出来”；VLM = 视觉语言模型，能同时“看懂图、读懂字”。MinerU 允许你为两者分别指定引擎。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== 6 Tools ======== -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">6</div>
+      <div>
+        <h2 data-zh="统一的工具集" data-de="Einheitliche Tools">统一的工具集</h2>
+        <p data-zh="从开发者到普通用户，都有一套顺手工具" data-de="Für Entwickler wie Endanwender">从开发者到普通用户，都有一套顺手工具</p>
+      </div>
+    </div>
+    <div class="grid g4">
+      <div class="card"><div class="ico">🐍</div><h3 data-zh="Python SDK" data-de="Python-SDK">Python SDK</h3><p data-zh="供开发者以代码方式调用全部能力，方便嵌入自己的应用。" data-de="Entwickler rufen alle Funktionen per Code auf – ideal für eigene Anwendungen.">供开发者以代码方式调用全部能力，方便嵌入自己的应用。</p></div>
+      <div class="card"><div class="ico">🔌</div><h3 data-zh="V1 API" data-de="V1-API">V1 API</h3><p data-zh="标准接口，便于与其他系统做应用集成与对接。" data-de="Standardisierte Schnittstelle für die Integration in andere Systeme.">标准接口，便于与其他系统做应用集成与对接。</p></div>
+      <div class="card"><div class="ico">⚙️</div><h3 data-zh="批量转换" data-de="Batch-Konvertierung">批量转换</h3><p data-zh="无状态批量转换，一次性成批处理大量文档，无需保存中间状态。" data-de="Zustandslose Stapelverarbeitung für viele Dokumente auf einmal.">无状态批量转换，一次性成批处理大量文档，无需保存中间状态。</p></div>
+      <div class="card"><div class="ico">🛰️</div><h3 data-zh="Router + WebUI" data-de="Router + WebUI">Router + WebUI</h3><p data-zh="多服务 Router 统一调度请求；基于 Gradio 的 WebUI 则让普通用户可视化操作。" data-de="Der Router bündelt Anfragen; die Gradio-basierte WebUI macht die Bedienung visuell.">多服务 Router 统一调度请求；基于 Gradio 的 WebUI 则让普通用户可视化操作。</p></div>
+    </div>
+  </section>
+
+  <!-- ======== 7 Outputs ======== -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">7</div>
+      <div>
+        <h2 data-zh="结构化输出：9 种渲染目标" data-de="9 Rendering-Ziele">结构化输出：9 种渲染目标</h2>
+        <p data-zh="一个文档模型，多种交付格式" data-de="Ein Dokumentmodell, viele Formate">一个文档模型，多种交付格式</p>
+      </div>
+    </div>
+    <div class="chips">
+      <span class="chip">Markdown</span><span class="chip">HTML</span><span class="chip">LaTeX</span>
+      <span class="chip">DOCX</span><span class="chip">EPUB</span><span class="chip">PDF</span>
+      <span class="chip"><b data-zh="结构化内容" data-de="Structured Content">结构化内容</b></span>
+      <span class="chip"><b data-zh="内容列表 V1 / V2" data-de="Content List V1/V2">内容列表 V1 / V2</b></span>
+    </div>
+    <div class="callout">
+      <span class="big">📝</span>
+      <div>
+        <span data-zh="不同的 CLI / API 会公开各自支持的导出子集。详细说明请参见官方文档的“输出格式（Output Formats）”与“结果约定（Result Contract）”章节。" data-de="Jede CLI/API stellt eine eigene Teilmenge an Exporten bereit. Details finden Sie unter „Output Formats“ und „Result Contract“ in der offiziellen Dokumentation.">不同的 CLI / API 会公开各自支持的导出子集。详细说明请参见官方文档的“输出格式（Output Formats）”与“结果约定（Result Contract）”章节。</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ======== 8 Matrix ======== -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">8</div>
+      <div>
+        <h2 data-zh="格式支持总览" data-de="Übersicht der Formatunterstützung">格式支持总览</h2>
+        <p data-zh="不同类型文档的解析方式一览" data-de="Wie Dokumenttypen analysiert werden">不同类型文档的解析方式一览</p>
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table>
+        <thead>
+          <tr>
+            <th data-zh="输入类型" data-de="Eingabetyp">输入类型</th>
+            <th data-zh="支持层级 / 处理方式" data-de="Ebene / Verarbeitung">支持层级 / 处理方式</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td data-zh="PDF、图片" data-de="PDF, Bilder">PDF、图片</td><td><span class="ok" data-zh="支持全部四个解析层级" data-de="alle vier Ebenen">支持全部四个解析层级</span></td></tr>
+          <tr><td data-zh="Office（DOC/DOCX、PPT/PPTX、XLS/XLSX）、OpenDocument（ODT/ODS/ODP）、EPUB、OFD、HTML/MHTML、CSV/TSV" data-de="Office (DOC/DOCX, PPT/PPTX, XLS/XLSX), OpenDocument (ODT/ODS/ODP), EPUB, OFD, HTML/MHTML, CSV/TSV">Office 系列 · OpenDocument · EPUB · OFD · HTML/MHTML · CSV/TSV</td><td data-zh="使用本地 Flash 原生解析" data-de="lokale native Flash-Analyse">使用本地 Flash 原生解析</td></tr>
+          <tr><td data-zh="纯文本" data-de="Reiner Text">纯文本</td><td data-zh="直接读取，无需解析" data-de="direkt gelesen, ohne Analyse">直接读取，无需解析</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ======== 9 Privacy ======== -->
+  <section>
+    <div class="sec-head">
+      <div class="sec-num">9</div>
+      <div>
+        <h2 data-zh="隐私与安全" data-de="Datenschutz & Sicherheit">隐私与安全</h2>
+        <p data-zh="你的文档，默认只留在本地" data-de="Ihre Dokumente bleiben standardmäßig lokal">你的文档，默认只留在本地</p>
+      </div>
+    </div>
+    <div class="callout warn">
+      <span class="big">🔒</span>
+      <div><b data-zh="重要说明：" data-de="Wichtig:">重要说明：</b>
+        <span data-zh="文档默认不会自动上传到官方服务，解析过程在本地完成；只有当你显式配置远程解析时，才会发起远程请求。敏感文档可以放心在本地处理。" data-de="Dokumente werden nicht automatisch zum offiziellen Dienst hochgeladen; die Analyse erfolgt lokal. Nur bei expliziter Konfiguration wird Remote-Analyse genutzt – sensible Dokumente können sicher lokal verarbeitet werden.">文档默认不会自动上传到官方服务，解析过程在本地完成；只有当你显式配置远程解析时，才会发起远程请求。敏感文档可以放心在本地处理。</span>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span data-zh="MinerU 4.0 技术文档（通俗版）· 中文 / Deutsch 双语浏览" data-de="MinerU 4.0 – Technische Dokumentation · Zweisprachig (Chinesisch / Deutsch)">MinerU 4.0 技术文档（通俗版）· 中文 / Deutsch 双语浏览</span>
+  </footer>
+
+</div>
+
+<script>
+  function setLang(lang){
+    document.getElementById('btn-zh').classList.toggle('on', lang==='zh');
+    document.getElementById('btn-de').classList.toggle('on', lang==='de');
+    document.documentElement.lang = lang==='zh' ? 'zh-CN' : 'de';
+    document.querySelectorAll('[data-zh]').forEach(el=>{
+      var key = 'data-'+(lang==='zh'?'zh':'de');
+      if(el.hasAttribute(key) && el.getAttribute(key) !== ''){ el.textContent = el.getAttribute(key); }
+    });
+    /* 表格单元格有独立的 data-zh / data-de，其中带内联元素的表格单元格已由上面的通用逻辑处理 */
+  }
+</script>
+
+</body>
+</html>
